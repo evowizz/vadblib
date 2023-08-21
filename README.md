@@ -3,7 +3,7 @@ VAdbLib allows you to use ADB commands in your V language projects.
 
 ## Installation
 ```bash
-v install evowizz.vadblib
+v install evowizz.VAdbLib
 ```
 
 **Note:** VAdbLib finds the ADB executable itself. You need to have ADB installed on your system.
