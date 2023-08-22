@@ -13,7 +13,6 @@
 // limitations under the License.
 module vadblib
 
-import strings
 import os
 
 const (
@@ -101,22 +100,4 @@ fn find_target(serial string, usb bool, transport_id string) string {
 	}
 
 	return ''
-}
-
-fn execute(target string, args ...string) !string {
-	mut sb := strings.new_builder(vadblib.initial_execute_size)
-	sb.write_string(target)
-	for arg in args {
-		sb.write_string(' ')
-		sb.write_string(arg)
-	}
-	cmd := sb.str()
-
-	res := os.execute(cmd)
-	output := res.output.trim_space()
-	if res.exit_code != 0 {
-		return error(output)
-	}
-
-	return output
 }
