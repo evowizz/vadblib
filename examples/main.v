@@ -16,7 +16,8 @@ module main
 import vadblib
 
 fn main() {
-	adb := vadblib.AndroidDebugBridge.new() or { panic(err) }
+	adb_path := vadblib.find_adb() or { panic(err) }
+	adb := vadblib.AndroidDebugBridge.new(adb_path) or { panic(err) }
 
 	adb.start() or { panic(err) }
 	devices := adb.devices() or { panic(err) }
