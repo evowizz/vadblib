@@ -23,6 +23,9 @@ const (
 
 struct AndroidDebugBridge {
 	executable string
+pub:
+	version       string
+	build_version string
 }
 
 // RunParams specifies the parameters for the `run` function.
@@ -35,29 +38,35 @@ pub:
 	usb          bool
 }
 
-pub fn AndroidDebugBridge.new() !AndroidDebugBridge {
-	path := find_adb()!
+pub fn AndroidDebugBridge.new(path string) !AndroidDebugBridge {
+	if !os.exists(path) {
+		return error('Executable does not exist')
+	}
+
+	if !os.is_executable(path) {
+		return error('Executable is not executable')
+	}
+
+	// Check the adb version.
+	output := execute(path, 'version')!
+	if output.trim_space().len == 0 {
+		return error('Failed to get adb version')
+	}
+
+	// The output may have 3 or more lines. But we only need the first 2 lines.
+	// Example:
+	// Android Debug Bridge version 1.0.41
+	// Version 31.0.3-7562133
+	lines := output.split_into_lines()
+
+	version := lines[0].split(' ').last()
+	build_version := lines[1].fields().last()
+
 	return AndroidDebugBridge{
 		executable: path
+		version: version
+		build_version: build_version
 	}
-}
-
-fn (adb AndroidDebugBridge) execute(args ...string) !string {
-	mut sb := strings.new_builder(vadblib.initial_execute_size)
-	sb.write_string(adb.executable)
-	for arg in args {
-		sb.write_string(' ')
-		sb.write_string(arg)
-	}
-	cmd := sb.str()
-
-	res := os.execute(cmd)
-	output := res.output.trim_space()
-	if res.exit_code != 0 {
-		return error(output)
-	}
-
-	return output
 }
 
 // run executes adb with the given `command`, and returns the output.
@@ -75,7 +84,7 @@ pub fn (adb AndroidDebugBridge) run(params RunParams) !string {
 	mut args := []string{}
 	args << find_target(params.serial, params.usb, params.transport_id)
 	args << command
-	return adb.execute(...args)
+	return execute(adb.executable, ...args)
 }
 
 fn find_target(serial string, usb bool, transport_id string) string {
@@ -92,4 +101,22 @@ fn find_target(serial string, usb bool, transport_id string) string {
 	}
 
 	return ''
+}
+
+fn execute(target string, args ...string) !string {
+	mut sb := strings.new_builder(vadblib.initial_execute_size)
+	sb.write_string(target)
+	for arg in args {
+		sb.write_string(' ')
+		sb.write_string(arg)
+	}
+	cmd := sb.str()
+
+	res := os.execute(cmd)
+	output := res.output.trim_space()
+	if res.exit_code != 0 {
+		return error(output)
+	}
+
+	return output
 }
