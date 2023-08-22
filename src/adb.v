@@ -19,7 +19,6 @@ import os
 const (
 	// 54 should be enough for most cases.
 	initial_execute_size = 54
-	raw_header_size      = 4
 )
 
 struct AndroidDebugBridge {
