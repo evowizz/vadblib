@@ -20,38 +20,7 @@ const (
 	possible_sdk_paths = get_platform_specific_paths()
 )
 
-fn get_platform_specific_adb_filename() string {
-	return $if windows {
-		'adb.exe'
-	} $else {
-		'adb'
-	}
-}
-
-fn get_platform_specific_paths() []string {
-	return $if macos {
-		[
-			os.getenv('ANDROID_SDK_ROOT'),
-			os.join_path(os.getenv('HOME'), 'Library', 'Android', 'sdk'),
-		]
-	} $else $if windows {
-		[
-			os.getenv('ANDROID_SDK_ROOT'),
-			os.join_path(os.getenv('LOCALAPPDATA'), 'Android', 'Sdk'),
-		]
-	} $else $if linux {
-		[
-			os.getenv('ANDROID_SDK_ROOT'),
-			os.join_path(os.getenv('HOME'), 'Android', 'Sdk'),
-		]
-	} $else {
-		[
-			os.getenv('ANDROID_SDK_ROOT'),
-		]
-	}
-}
-
-fn find_adb() !string {
+pub fn find_adb() !string {
 	if !is_os_supported() {
 		return error('OS not supported')
 	}
@@ -86,5 +55,36 @@ fn is_os_supported() bool {
 		return true
 	} $else {
 		return false
+	}
+}
+
+fn get_platform_specific_adb_filename() string {
+	return $if windows {
+		'adb.exe'
+	} $else {
+		'adb'
+	}
+}
+
+fn get_platform_specific_paths() []string {
+	return $if macos {
+		[
+			os.getenv('ANDROID_SDK_ROOT'),
+			os.join_path(os.getenv('HOME'), 'Library', 'Android', 'sdk'),
+		]
+	} $else $if windows {
+		[
+			os.getenv('ANDROID_SDK_ROOT'),
+			os.join_path(os.getenv('LOCALAPPDATA'), 'Android', 'Sdk'),
+		]
+	} $else $if linux {
+		[
+			os.getenv('ANDROID_SDK_ROOT'),
+			os.join_path(os.getenv('HOME'), 'Android', 'Sdk'),
+		]
+	} $else {
+		[
+			os.getenv('ANDROID_SDK_ROOT'),
+		]
 	}
 }
