@@ -6,15 +6,14 @@ VAdbLib allows you to use ADB commands in your V language projects.
 v install evowizz.vadblib
 ```
 
-**Note:** VAdbLib finds the ADB executable itself. You need to have ADB installed on your system.
-
 ## Example
 ```v
 import evowizz.vadblib
 
 fn main() {
-  // Create a new ADB instance (which will automatically find the ADB executable)
-  adb := vadblib.AndroidDebugBridge.new() or { panic(err) }
+  // Find ADB, and create a new ADB instance
+  adb_path := vadblib.find_adb() or { panic(err) }
+  adb := vadblib.AndroidDebugBridge.new(adb_path) or { panic(err) }
 
   // Equivalent to `adb start-server`, you can also pass your own port
   adb.start() or { panic(err) }
