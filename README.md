@@ -47,6 +47,9 @@ _Note: You can also restart the server with `adb.restart(<port>)`_
 
 _Note: If more than one target is provided (for example: `adb.run(command: "get-state", serial: "123", transport_id: "1", usb: true)`), serial will be prioritized, then transport_id, then usb._
 
+- `adb -s <serial> pull <remote> <local>`: `device.pull(<sources>, <destination>, <keep_attributes>, <compression>)`
+- `adb -s <serial> push <local> <remote>`: `device.push(<sources>, <destination>, <sync>, <compression>)`
+
 - `adb devices -l`: `adb.devices()`
 - `adb -s <serial> <command>`: `device.run(<command>)`
 - `adb -s <serial> shell <command>`: `device.run_shell(<command>)`
